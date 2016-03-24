@@ -20,7 +20,7 @@ object Dl4jMain {
     val layerSize = 150
 
     val path = "/Users/davidblumenthal/data/full-ads-india/processed/"
-    val altPath = "~/data/"
+    val altPath = "/home/ubuntu/data/"
 
     val dataFile = "sentences_6M.csv"
 
