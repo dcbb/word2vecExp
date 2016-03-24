@@ -11,15 +11,22 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
   */
 object Dl4jMain {
 
+  def fileExists(path: String) = new File(path).exists()
+
   def main( args: Array[String] ) = {
 
     val batchSize = 1000
     val iterations = 3
     val layerSize = 150
 
-    val path = "/Users/davidblumenthal/data/full-ads-india/processed/sentences_6M.csv"
+    val path = "/Users/davidblumenthal/data/full-ads-india/processed/"
+    val altPath = "~/data/"
 
-    val sentenceIter = new LineSentenceIterator(new File(path))
+    val dataFile = "sentences_6M.csv"
+
+    val dataPath = if (fileExists(path+dataFile)) path+dataFile else altPath+dataFile
+
+    val sentenceIter = new LineSentenceIterator(new File(dataPath))
     val tokenizer = new DefaultTokenizerFactory()
 
     val word2vec = new Builder()
