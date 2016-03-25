@@ -260,5 +260,6 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" name="SBT: com.github.scopt:scopt_2.11:3.4.0:jar" level="project" />
   </component>
 </module>

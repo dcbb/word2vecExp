@@ -11,30 +11,23 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
   */
 object Dl4jMain {
 
-  def fileExists(path: String) = new File(path).exists()
+  def getFile(paths: Seq[String], fileName: String) : File = {
+    paths.map { p => new File(p+fileName) }
+      .filter( _.exists() )
+      .head
+  }
 
-  def main( args: Array[String] ) = {
+  def run( config: Config ) = {
 
-    val batchSize = 1000
-    val iterations = 3
-    val layerSize = 150
-
-    val path = "/Users/davidblumenthal/data/full-ads-india/processed/"
-    val altPath = "/home/ubuntu/data/"
-
-    val dataFile = "sentences_6M.csv"
-
-    val dataPath = if (fileExists(path+dataFile)) path+dataFile else altPath+dataFile
-
-    val sentenceIter = new LineSentenceIterator(new File(dataPath))
+    val sentenceIter = new LineSentenceIterator(config.dataFile)
     val tokenizer = new DefaultTokenizerFactory()
 
     val word2vec = new Builder()
-      .batchSize(batchSize) //# words per minibatch.
+      .batchSize(config.batchSize) //# words per minibatch.
       .minWordFrequency(5) //
       .useAdaGrad(false) //
-      .layerSize(layerSize) // word feature vector size
-      .iterations(iterations) // # iterations to train
+      .layerSize(config.layerSize) // word feature vector size
+      .iterations(config.iterations) // # iterations to train
       .learningRate(0.025) //
       .minLearningRate(1e-3) // learning rate decays wrt # words. floor learning
       .negativeSample(10) // sample size 10 words
@@ -46,7 +39,32 @@ object Dl4jMain {
     word2vec.fit()
 
     println("Saving")
-    WordVectorSerializer.writeWordVectors(word2vec,"words.txt")
+    WordVectorSerializer.writeWordVectors(word2vec,config.outFile)
+  }
+
+  case class Config( dataFile: File = new File("."),
+                     outFile: String = "words.txt",
+                     batchSize: Int = 1000,
+                     iterations: Int = 3,
+                     layerSize: Int = 150 )
+
+  def main( args: Array[String] ) = {
+
+    val parser = new scopt.OptionParser[Config]("dl4jexp") {
+      opt[String]("input").required()
+        .action { (x, conf) => conf.copy(dataFile = new File(x)) }
+        .validate { x => if (new File(x).exists()) success else failure("input file not found") }
+      opt[String]("output")
+        .action { (x, conf) => conf.copy(outFile=x) }
+      opt[Int]("batchSize").action( (x,c) => c.copy(batchSize = x) )
+      opt[Int]("iterations").action( (x,c) => c.copy(iterations = x) )
+      opt[Int]("layerSize").action( (x,c) => c.copy(layerSize = x) )
+    }
+
+    parser.parse(args, Config()) match {
+      case Some(config) => run(config)
+      case None =>
+    }
   }
 
 }
