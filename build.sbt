@@ -11,3 +11,7 @@ libraryDependencies += "org.deeplearning4j" % "deeplearning4j-ui" % "0.4-rc3.8"
 libraryDependencies += "com.github.scopt" %% "scopt" % "3.4.0"
 
 resolvers += Resolver.sonatypeRepo("public")
+
+fork := true
+
+javaOptions += "-Xmx55G"
