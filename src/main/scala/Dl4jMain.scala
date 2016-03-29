@@ -27,10 +27,11 @@ object Dl4jMain {
       .minWordFrequency(5) //
       .useAdaGrad(false) //
       .layerSize(config.layerSize) // word feature vector size
+      .windowSize(5)
       .iterations(config.iterations) // # iterations to train
       .learningRate(0.025) //
-      .minLearningRate(1e-3) // learning rate decays wrt # words. floor learning
-      .negativeSample(10) // sample size 10 words
+      .minLearningRate(1e-2) // learning rate decays wrt # words. floor learning
+      .negativeSample(0) // see https://github.com/deeplearning4j/deeplearning4j/issues/1039
       .iterate(sentenceIter) //
       .tokenizerFactory(tokenizer)
       .build()
@@ -46,7 +47,7 @@ object Dl4jMain {
                      outFile: String = "words.txt",
                      batchSize: Int = 1000,
                      iterations: Int = 3,
-                     layerSize: Int = 150 )
+                     layerSize: Int = 250 )
 
   def main( args: Array[String] ) = {
 
